@@ -1,6 +1,5 @@
-#include "SimpleListModel.h"
-
-#include "DataObject.h"
+#include "simplelistmodel.h"
+#include "dataobject.h"
 
 // You can define custom data roles starting with Qt::UserRole
 const int SimpleListModel::FirstNameRole = Qt::UserRole + 1;
@@ -8,13 +7,6 @@ const int SimpleListModel::LastNameRole = Qt::UserRole + 2;
 
 SimpleListModel::SimpleListModel(QObject *parent) :
     QAbstractListModel(parent) {
-    // Create dummy data for the list
-    DataObject *first = new DataObject(QString("Arthur"), QString("Dent"));
-    DataObject *second = new DataObject(QString("Ford"), QString("Prefect"));
-    DataObject *third = new DataObject(QString("Zaphod"), QString("Beeblebrox"));
-    m_items.append(first);
-    m_items.append(second);
-    m_items.append(third);
 }
 
 QHash<int, QByteArray> SimpleListModel::roleNames() const {
@@ -45,4 +37,21 @@ QVariant SimpleListModel::data(const QModelIndex &index,
     default:
         return QVariant();
     }
+}
+
+void SimpleListModel::addItem(DataObject *item)
+{
+    beginInsertRows(QModelIndex(), m_items.count(), m_items.count());
+    m_items.append(item);
+    endInsertRows();
+}
+
+DataObject* SimpleListModel::removeItem(int index)
+{
+    if(index<0 || index>=m_items.count()) return NULL;
+
+    beginRemoveRows(QModelIndex(), index, index);
+    DataObject* o = m_items.takeAt(index);
+    endRemoveRows();
+    return o;
 }

@@ -1,18 +1,18 @@
 #include <QGuiApplication>
-#include <QQmlContext>
-#include <QQmlEngine>
-#include <QQuickView>
-
-#include "SimpleListModel.h"
+#include <QQmlApplicationEngine>
+#include "worker.h"
 
 int main(int argc, char *argv[])
 {
-    QGuiApplication a(argc, argv);
-    QQuickView *view = new QQuickView();
-    SimpleListModel *model = new SimpleListModel(view);
-    view->engine()->rootContext()->setContextProperty("myModel", model);
-    view->setSource(QUrl::fromLocalFile("myuiscript.qml"));
-    view->show();
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QGuiApplication app(argc, argv);
 
-    return a.exec();
+    qmlRegisterType<Worker>("com.qmllist.worker", 1, 0, "Worker");
+
+    QQmlApplicationEngine engine;
+    engine.load(QUrl(QLatin1String("qrc:/qml/main.qml")));
+    if (engine.rootObjects().isEmpty())
+        return -1;
+
+    return app.exec();
 }
